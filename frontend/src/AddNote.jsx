@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function AddNote() {
   const [text, setText] = useState('');
+  const API_URL = "https://noteapp-3-zc97.onrender.com";
+  const navigate = useNavigate();
 
   const addNote = async () => {
     if (!text.trim()) return;
     try {
-      await axios.post('http://localhost:5000/notes', { text });
+      await axios.post(`${API_URL}/notes`, { text });
       setText('');
-      alert('Note added! Go back to Home to see it.');
+      navigate('/'); // Redirect to Home after adding
     } catch (err) {
       console.error('Error adding note:', err);
     }

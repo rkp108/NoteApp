@@ -4,10 +4,11 @@ import axios from 'axios';
 function Home() {
   const [notes, setNotes] = useState([]);
   const [hoveredId, setHoveredId] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL || "https://noteapp-3-zc97.onrender.com";
 
   const getAllNotes = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/notes');
+      const res = await axios.get(`${API_URL}/notes`);
       setNotes(res.data);
     } catch (err) {
       console.error('Error fetching notes:', err);
@@ -16,7 +17,7 @@ function Home() {
 
   const deleteNote = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/notes/${id}`);
+      await axios.delete(`${API_URL}/notes/${id}`);
       getAllNotes();
     } catch (err) {
       console.error('Error deleting note:', err);
@@ -30,26 +31,30 @@ function Home() {
   return (
     <div style={styles.container}>
       <h2 style={styles.heading}>📋 All Notes</h2>
-      <ul style={styles.noteList}>
-        {notes.map((note) => (
-          <li
-            key={note.id}
-            style={styles.noteItem}
-            onMouseEnter={() => setHoveredId(note.id)}
-            onMouseLeave={() => setHoveredId(null)}
-          >
-            {note.text}
-            {hoveredId === note.id && (
-              <button
-                onClick={() => deleteNote(note.id)}
-                style={styles.deleteButton}
-              >
-                ❌
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
+      {notes.length === 0 ? (
+        <p style={styles.empty}>Note is empty</p>
+      ) : (
+        <ul style={styles.noteList}>
+          {notes.map((note) => (
+            <li
+              key={note.id}
+              style={styles.noteItem}
+              onMouseEnter={() => setHoveredId(note.id)}
+              onMouseLeave={() => setHoveredId(null)}
+            >
+              <span>{note.text}</span>
+              {hoveredId === note.id && (
+                <button
+                  onClick={() => deleteNote(note.id)}
+                  style={styles.deleteButton}
+                >
+                  ❌
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -94,6 +99,13 @@ const styles = {
     padding: '6px 10px',
     borderRadius: '5px',
     cursor: 'pointer',
+    transition: 'background 0.3s ease',
+  },
+  empty: {
+    textAlign: 'center',
+    color: '#777',
+    fontStyle: 'italic',
+    fontSize: '1.1rem',
   },
 };
 
